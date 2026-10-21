@@ -6,6 +6,8 @@ import {
   Box,
   IconButton,
   Menu,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
 
 // Import các trang
@@ -31,6 +33,7 @@ import PersonRoundedIcon from "@mui/icons-material/PersonRounded"; // 👤 Icon 
 import LogoutIcon from "@mui/icons-material/Logout";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import LoginIcon from "@mui/icons-material/Login";
+import CloseIcon from "@mui/icons-material/Close";
 
 // Import Contexts
 import { CongNoProvider } from './contexts/CongNoContext';
@@ -42,6 +45,9 @@ function AppContent() {
   
   const [openChangePassword, setOpenChangePassword] = useState(false);
   
+  // State quản lý việc phóng to logo giữa màn hình
+  const [openLogoZoom, setOpenLogoZoom] = useState(false);
+
   // 1. Khởi tạo activeModule từ localStorage, mặc định nếu chưa có thì là 'login' hoặc 'dashboard'
   const [activeModule, setActiveModule] = useState(() => {
     const savedModule = localStorage.getItem('activeModule');
@@ -99,7 +105,7 @@ function AppContent() {
         <Toolbar
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justify: "space-between",
             alignItems: "center",
             gap: 1,
             minHeight: "48px !important",
@@ -111,19 +117,28 @@ function AppContent() {
         >
           {/* LEFT: LOGO + DASHBOARD */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {/* LOGO BẤM VÀO SẼ MỞ POPUP PHÓNG TO */}
             <Box
               component="img"
-              src="/Logo.png"
-              alt="Logo"
-              onClick={() => setActiveModule(config?.loggedIn ? 'dashboard' : 'login')}
+              src="/logo2.png"
+              alt="Logo QUẢN LÝ CÔNG NỢ KH"
+              onClick={() => setOpenLogoZoom(true)}
+              title="Bấm để xem logo phóng to"
               sx={{
                 height: 34,
+                width: 34, // Đảm bảo giữ tỉ lệ vuông 1:1
+                objectFit: "contain",
                 flexShrink: 0,
                 ml: { xs: -1, sm: -2 },
                 mr: 1,
                 cursor: "pointer",
+                borderRadius: "4px",
+                transition: "transform 0.2s",
+                "&:hover": {
+                  transform: "scale(1.08)",
+                },
               }}
-            />          
+            />        
 
             <Button
               onClick={() => setActiveModule(config?.loggedIn ? 'dashboard' : 'login')}
@@ -151,13 +166,12 @@ function AppContent() {
                   bgcolor: isThuậnPhát ? "#10b981" : "#FFD700",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
+                  justify: "center",
                   cursor: "pointer",
                   boxShadow: isThuậnPhát 
                     ? "0 2px 8px rgba(16, 185, 129, 0.4)" 
                     : "0 2px 8px rgba(255, 215, 0, 0.4)",
                 }}
-                //title={`Tài khoản: ${currentAccount}`}
               >
                 {isThuậnPhát ? (
                   <PersonRoundedIcon sx={{ color: "#fff", fontSize: 18 }} />
@@ -189,6 +203,48 @@ function AppContent() {
           )}
         </Toolbar>
       </AppBar>
+
+      {/* POPUP PHÓNG TO LOGO GIỮA MÀN HÌNH */}
+      <Dialog
+        open={openLogoZoom}
+        onClose={() => setOpenLogoZoom(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: "16px",
+            p: 2,
+            position: "relative",
+            textAlign: "center",
+          },
+        }}
+      >
+        <IconButton
+          onClick={() => setOpenLogoZoom(false)}
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+
+        <DialogContent sx={{ p: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Box
+            component="img"
+            src="/logo2.png"
+            alt="Logo QUẢN LÝ CÔNG NỢ KH"
+            sx={{
+              width: "100%",
+              maxHeight: "65vh",
+              objectFit: "contain",
+              borderRadius: "8px",
+            }}
+          />
+        </DialogContent>
+      </Dialog>
 
       {/* MENU HỆ THỐNG */}
       <Menu

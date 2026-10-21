@@ -270,7 +270,7 @@ export default function HoaDonBanHang() {
   });
 
   return (
-    <Box sx={{ width: '80%', mx: 'auto', p: { xs: 1, sm: 2 }, bgcolor: '#f1f5f9', minHeight: '100vh', boxSizing: 'border-box' }}>
+    <Box sx={{ width: { xs: '100%', sm: '80%' }, mx: 'auto', p: { xs: 0.5, sm: 2 }, bgcolor: '#f1f5f9', minHeight: '100vh', boxSizing: 'border-box' }}>
       <Paper elevation={2} sx={{ width: '100%', p: { xs: 2, sm: 3 }, borderRadius: 2, bgcolor: '#fff' }}>
         
         {/* ĐẦU PHIẾU: CHIA 3 CỘT */}
@@ -527,7 +527,7 @@ export default function HoaDonBanHang() {
                   sx={{
                     flex: 1,
                     width: '100%',
-                    minWidth: '340px',
+                    minWidth: '200px',
                   }}
                 />
               </Box>
@@ -556,7 +556,7 @@ export default function HoaDonBanHang() {
                   sx={{
                     bgcolor: '#fff',
                     flex: 1,
-                    minWidth: '300px',
+                    minWidth: '200px',
                     '& .MuiInputBase-root': {
                       height: 32,
                       fontSize: '0.8rem',

@@ -667,7 +667,7 @@ export default function CongNoKhachHang({ onBack }) {
             </Tooltip>
 
             {/* NÚT NHẬP EXCEL */}
-            <Tooltip title="Nhập Excel vào Firestore">
+            {/*<Tooltip title="Nhập Excel vào Firestore">
               <span>
                 <IconButton
                   size="small"
@@ -685,7 +685,7 @@ export default function CongNoKhachHang({ onBack }) {
                   <Upload size={16} />
                 </IconButton>
               </span>
-            </Tooltip>
+            </Tooltip>*/}
 
             {/* NÚT XUẤT EXCEL */}
             <Tooltip title="Xuất Excel">
@@ -774,11 +774,12 @@ export default function CongNoKhachHang({ onBack }) {
             <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#dc2626' }}>
               Tên khách hàng:
             </Typography>
-            <FormControl size="small" sx={{ minWidth: 220 }}>
+            <FormControl size="small" sx={{ width: { xs: 'auto', sm: 220 }, minWidth: { xs: 120, sm: 220 } }}>
               <Select
                 value={selectedCustomer}
                 onChange={handleCustomerChange}
                 displayEmpty
+                autoWidth
                 sx={{
                   fontWeight: 700,
                   color: '#dc2626',

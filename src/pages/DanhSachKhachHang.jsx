@@ -13,6 +13,8 @@ import {
   InputAdornment,
   Tooltip,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import {
   Search,
@@ -44,43 +46,54 @@ export default function DanhSachKhachHang() {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-  // 🌟 HÀM TỰ ĐỘNG TẢI DỮ LIỆU TỪ COLLECTION "customers" TRÊN FIRESTORE
+  // 🌟 HÀM TỰ ĐỘNG TẢI DỮ LIỆU TỪ COLLECTION "CONGNO" TRÊN FIRESTORE
   const loadCustomersFromFirestore = useCallback(async () => {
     try {
       setLoadingFirestore(true);
-      const customersRef = collection(db, "customers");
-      const querySnapshot = await getDocs(customersRef);
+      const congNoRef = collection(db, "CONGNO");
+      const querySnapshot = await getDocs(congNoRef);
 
-      const loadedData = [];
-      let index = 1;
+      const customerMap = new Map(); // Lọc trùng khách hàng dựa trên tên
 
       querySnapshot.forEach((docSnap) => {
         const data = docSnap.data();
-        loadedData.push({
-          id: docSnap.id,
-          stt: index++,
-          name: data.name || data.tenKhachHang || docSnap.id,
-          phone: data.phone || data.dienThoai || '—',
-          address: data.address || data.diaChi || '—',
-        });
+        
+        const name = data.tenKhachHang || data.name || data.khachHang || docSnap.id;
+        const phone = data.phone || data.dienThoai || data.soDienThoai || '—';
+        const address = data.address || data.diaChi || '—';
+
+        if (name && !customerMap.has(name)) {
+          customerMap.set(name, {
+            id: docSnap.id,
+            name: name,
+            phone: phone,
+            address: address,
+          });
+        }
       });
+
+      const loadedData = Array.from(customerMap.values()).map((item, index) => ({
+        ...item,
+        stt: index + 1,
+      }));
 
       if (loadedData.length > 0) {
         setCustomers(loadedData);
         setSnackbar({
           open: true,
-          message: `Đã tự động tải ${loadedData.length} khách hàng từ Firestore thành công!`,
+          message: `Đã tải ${loadedData.length} khách hàng từ collection CONGNO!`,
           severity: "success",
         });
       } else {
+        setCustomers([]);
         setSnackbar({
           open: true,
-          message: "Collection 'customers' trên Firestore hiện chưa có dữ liệu!",
+          message: "Collection 'CONGNO' trên Firestore hiện chưa có dữ liệu khách hàng!",
           severity: "info",
         });
       }
     } catch (error) {
-      console.error("Lỗi đọc dữ liệu khách hàng từ Firestore:", error);
+      console.error("Lỗi đọc dữ liệu khách hàng từ CONGNO:", error);
       setSnackbar({
         open: true,
         message: `Lỗi tải danh sách khách hàng: ${error.message}`,
@@ -193,7 +206,7 @@ export default function DanhSachKhachHang() {
           boxSizing: 'border-box',
         }}
       >
-        {/* THANH ĐIỀU HƯỚNG BÊN TRÊN: CĂN TRÁI VÀ CHỈ DÙNG ICON (ĐÃ BỎ DASHBOARD) */}
+        {/* THANH ĐIỀU HƯỚNG BÊN TRÊN */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: 1, mb: 2 }}>
           <Tooltip title="Xuất Excel">
             <IconButton
@@ -345,6 +358,18 @@ export default function DanhSachKhachHang() {
             </TableBody>
           </Table>
         </TableContainer>
+
+        {/* NOTIFICATION SNACKBAR */}
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={3000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        >
+          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: "100%" }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Paper>
     </Box>
   );

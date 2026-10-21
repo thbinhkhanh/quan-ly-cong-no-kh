@@ -5,16 +5,16 @@ import { db } from '../firebase';
 export const ConfigContext = createContext();
 
 export const ConfigProvider = ({ children }) => {
-  // Lấy dữ liệu khởi tạo từ localStorage để hiển thị ngay lập tức không bị trễ
+  // Lấy dữ liệu khởi tạo từ sessionStorage để khi F5 không bị mất phiên đăng nhập
   const [config, setConfig] = useState(() => {
-    const localLoggedIn = localStorage.getItem('loggedIn') === 'true';
-    const localAccount = localStorage.getItem('account') || '';
-    const localAccountType = localStorage.getItem('accountType') || (localAccount.toLowerCase().includes('thuận phát') ? 'thuanphat' : 'admin');
+    const sessionLoggedIn = sessionStorage.getItem('loggedIn') === 'true';
+    const sessionAccount = sessionStorage.getItem('account') || '';
+    const sessionAccountType = sessionStorage.getItem('accountType') || (sessionAccount.toLowerCase().includes('thuận phát') ? 'thuanphat' : 'admin');
     
     return {
-      loggedIn: localLoggedIn,
-      account: localAccount,
-      accountType: localAccountType, // 🌟 Biến lưu loại tài khoản: 'thuanphat' | 'admin'
+      loggedIn: sessionLoggedIn,
+      account: sessionAccount,
+      accountType: sessionAccountType, // 🌟 Biến lưu loại tài khoản: 'thuanphat' | 'admin'
     };
   });
   
@@ -33,15 +33,13 @@ export const ConfigProvider = ({ children }) => {
           
           setConfig((prev) => ({
             ...prev,
-            loggedIn: Boolean(data.loggedIn),
             account: data.account || prev.account,
             accountType: accType,
           }));
 
-          // Đồng bộ đệm vào localStorage
-          if (data.loggedIn !== undefined) localStorage.setItem('loggedIn', data.loggedIn ? 'true' : 'false');
-          if (data.account) localStorage.setItem('account', data.account);
-          if (accType) localStorage.setItem('accountType', accType);
+          // Đồng bộ đệm vào sessionStorage (chỉ lưu trong phiên làm việc hiện tại)
+          if (data.account) sessionStorage.setItem('account', data.account);
+          if (accType) sessionStorage.setItem('accountType', accType);
         }
         setLoading(false);
       },
@@ -54,7 +52,7 @@ export const ConfigProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  // Hàm cập nhật đồng bộ tức thì (Cập nhật State trước -> Lưu localStorage -> Đẩy Firestore)
+  // Hàm cập nhật đồng bộ tức thì (Cập nhật State trước -> Lưu sessionStorage -> Đẩy Firestore)
   const updateConfig = async (newConfigData) => {
     // 1. Tính toán giá trị loại tài khoản nếu chưa có
     let accType = newConfigData.accountType;
@@ -67,14 +65,14 @@ export const ConfigProvider = ({ children }) => {
       ...(accType ? { accountType: accType } : {}),
     };
 
-    // 2. Cập nhật ngay lập tức React State nội bộ (không bị delay)
+    // 2. Cập nhật ngay lập tức React State nội bộ
     setConfig((prev) => {
       const merged = { ...prev, ...updatedData };
       
-      // Lưu ngay lập tức vào localStorage
-      if (merged.loggedIn !== undefined) localStorage.setItem('loggedIn', merged.loggedIn ? 'true' : 'false');
-      if (merged.account) localStorage.setItem('account', merged.account);
-      if (merged.accountType) localStorage.setItem('accountType', merged.accountType);
+      // Lưu ngay lập tức vào sessionStorage
+      if (merged.loggedIn !== undefined) sessionStorage.setItem('loggedIn', merged.loggedIn ? 'true' : 'false');
+      if (merged.account) sessionStorage.setItem('account', merged.account);
+      if (merged.accountType) sessionStorage.setItem('accountType', merged.accountType);
 
       return merged;
     });

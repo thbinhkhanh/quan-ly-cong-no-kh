@@ -60,7 +60,7 @@ export default function DanhSachKhachHang() {
       querySnapshot.forEach((docSnap) => {
         const data = docSnap.data();
         
-        const name = data.tenKhachHang || data.name || data.khachHang || docSnap.id;
+        const name = data.customerName || data.tenKhachHang || data.name || data.khachHang || data.fullName || data.ten || docSnap.id;
         const phone = data.phone || data.dienThoai || data.soDienThoai || '—';
         const address = data.address || data.diaChi || '—';
 
@@ -334,7 +334,7 @@ export default function DanhSachKhachHang() {
         </TableContainer>
 
         {/* NOTIFICATION SNACKBAR */}
-        <Snackbar
+        {/*<Snackbar
           open={snackbar.open}
           autoHideDuration={3000}
           onClose={handleCloseSnackbar}
@@ -343,7 +343,7 @@ export default function DanhSachKhachHang() {
           <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: "100%" }}>
             {snackbar.message}
           </Alert>
-        </Snackbar>
+        </Snackbar>*/}
       </Paper>
     </Box>
   );

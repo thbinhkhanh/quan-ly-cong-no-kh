@@ -29,6 +29,7 @@ import ExcelJS from 'exceljs';
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { xuatExcelDanhSachKhachHang } from '../utils/xuatExcelDanhSachKhachHang';
+import { printDanhSachKhachHang } from '../utils/printDanhSachKhachHang';
 
 export default function DanhSachKhachHang() {
   const [customers, setCustomers] = useState([]);
@@ -197,7 +198,10 @@ export default function DanhSachKhachHang() {
           <Tooltip title="In Danh Sách">
             <IconButton
               size="small"
-              onClick={() => window.print()}
+              onClick={() => printDanhSachKhachHang({
+                filteredCustomers,
+                searchTerm
+              })}
               sx={{
                 border: '1px solid #64748b',
                 color: '#475569',

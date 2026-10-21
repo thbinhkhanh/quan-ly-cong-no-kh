@@ -47,6 +47,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { taiCongNo, clearCongNoCache, formatCustomerId } from '../utils/taiCongNo';
 import { importCongNoExcel } from '../utils/importCongNoExcel';
 import { xuatExcelCongNo } from '../utils/xuatExcelCongNo';
+import { printCongNo } from '../utils/printCongNo';
 
 // Import Dialog chỉnh sửa & Dialog Xóa
 import SuaGiaoDichCongNo from '../dialogs/SuaGiaoDichCongNo';
@@ -649,10 +650,16 @@ export default function CongNoKhachHang({ onBack }) {
             </Tooltip>
 
             {/* NÚT IN BẢNG */}
-            <Tooltip title="In Bảng">
+            <Tooltip title="In Bảng Công Nợ">
               <IconButton
                 size="small"
-                onClick={() => window.print()}
+                onClick={() => printCongNo({
+                  filteredItems,
+                  selectedCustomer,
+                  totalAmount,
+                  totalPaid,
+                  lastDebt
+                })}
                 sx={{
                   border: '1px solid #64748b',
                   color: '#475569',

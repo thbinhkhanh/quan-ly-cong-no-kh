@@ -33,6 +33,7 @@ import {
 import { useCongNo } from '../contexts/CongNoContext';
 import { useKho } from '../contexts/KhoContext';
 import { luuHoaDon } from '../utils/luuHoaDon'; // Sử dụng hàm luuHoaDon mới
+import { printHoaDon } from '../utils/printHoaDon';
 
 // Import 3 Dialog đã tạo
 import NoCu from '../dialogs/NoCu';
@@ -271,7 +272,7 @@ export default function HoaDonBanHang() {
 
   return (
     <Box sx={{ width: { xs: '100%', sm: '80%' }, mx: 'auto', p: { xs: 0.5, sm: 2 }, bgcolor: '#f1f5f9', minHeight: '100vh', boxSizing: 'border-box' }}>
-      <Paper elevation={2} sx={{ width: '100%', p: { xs: 2, sm: 3 }, borderRadius: 2, bgcolor: '#fff' }}>
+      <Paper elevation={2} className="print-invoice-area" sx={{ width: '100%', p: { xs: 2, sm: 3 }, borderRadius: 2, bgcolor: '#fff' }}>
         
         {/* ĐẦU PHIẾU: CHIA 3 CỘT */}
         <Box
@@ -451,7 +452,16 @@ export default function HoaDonBanHang() {
             <Button
               variant="outlined"
               size="small"
-              onClick={() => window.print()}
+              onClick={() => printHoaDon({
+                customerName: selectedCustomer,
+                customerAddress,
+                customerPhone,
+                date: useSystemDate ? systemDateStr : customDate,
+                rows,
+                totalAmount,
+                paidAmount: numPayment,
+                remainingDebt
+              })}
               startIcon={<Printer size={16} />}
               sx={{
                 borderColor: '#64748b',

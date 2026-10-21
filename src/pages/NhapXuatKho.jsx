@@ -23,8 +23,9 @@ import {
   PackageMinus
 } from 'lucide-react';
 
-// Import KhoContext chung
+// Import KhoContext chung và hàm in ấn
 import { useKho } from '../contexts/KhoContext';
+import { printNhapXuatKho } from '../utils/printNhapXuatKho';
 
 export default function NhapXuatKho() {
   const { items } = useKho();
@@ -42,7 +43,6 @@ export default function NhapXuatKho() {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-  // 🚀 TỐI ƯU 1: Dùng useMemo để cache kết quả tìm kiếm, tránh tính toán thừa khi re-render
   const filteredItems = useMemo(() => {
     if (!searchTerm.trim()) return items || [];
     const term = searchTerm.toLowerCase();
@@ -71,7 +71,6 @@ export default function NhapXuatKho() {
     return num.toLocaleString('vi-VN');
   };
 
-  // 🚀 TỐI ƯU 2: Cache các giá trị tổng số lượng bằng useMemo
   const { totalImport, totalExport, totalStock } = useMemo(() => {
     let imp = 0, exp = 0, stk = 0;
     for (const item of filteredItems) {
@@ -149,7 +148,11 @@ export default function NhapXuatKho() {
           <Button
             variant="outlined"
             size="small"
-            onClick={() => window.print()}
+            onClick={() => printNhapXuatKho({
+              filteredItems,
+              totals: { totalImport, totalExport, totalStock },
+              searchTerm
+            })}
             startIcon={<Printer size={16} />}
             sx={{
               borderColor: '#475569',
@@ -363,7 +366,6 @@ export default function NhapXuatKho() {
                 </TableRow>
               )}
 
-              {/* DÒNG TỔNG CỘNG HỆ THỐNG */}
               {filteredItems.length > 0 && (
                 <TableRow sx={{ bgcolor: "#e0f2fe" }}>
                   <TableCell colSpan={5} sx={{ ...cellSx, fontWeight: 800, color: "#0369a1", textAlign: "right", textTransform: "uppercase" }}>

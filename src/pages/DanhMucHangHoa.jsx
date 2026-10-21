@@ -37,6 +37,7 @@ import { useKho } from '../contexts/KhoContext';
 import { db } from "../firebase";
 import { collection, doc, setDoc, getDocs } from "firebase/firestore";
 import { xuatExcelDanhMucHangHoa } from '../utils/xuatExcelDanhMucHangHoa';
+import { printDanhMucHangHoa } from '../utils/printDanhMucHangHoa';
 
 /**
  * Hàm tạo Document ID an toàn không dấu, không khoảng trắng từ tên hàng
@@ -283,7 +284,10 @@ export default function DanhMucHangHoa() {
             <Tooltip title="In Bảng">
               <IconButton
                 size="small"
-                onClick={() => window.print()}
+                onClick={() => printDanhMucHangHoa({
+                  items: filteredItems, // In danh sách đã lọc theo từ khóa (hoặc truyền 'items' nếu muốn in toàn bộ)
+                  searchTerm
+                })}
                 sx={{
                   border: '1px solid #64748b',
                   color: '#475569',

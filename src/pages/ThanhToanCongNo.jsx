@@ -33,6 +33,7 @@ import { useCongNo } from "../contexts/CongNoContext";
 import { taiCongNo, clearCongNoCache, formatCustomerId } from '../utils/taiCongNo';
 import ThanhToan from "../dialogs/ThanhToanCongNo"; 
 import { xuatExcelTongHopKhachHang } from '../utils/xuatExcelTongHopKhachHang';
+import { printThanhToanCongNo } from '../utils/printThanhToanCongNo';
 
 export default function ThanhToanCongNo() {
   const { customersMap, items, updateCongNoData } = useCongNo();
@@ -443,7 +444,11 @@ export default function ThanhToanCongNo() {
             <Button
               variant="outlined"
               size="small"
-              onClick={() => window.print()}
+              onClick={() => printThanhToanCongNo({
+                displayData,
+                totals,
+                searchTerm
+              })}
               startIcon={<Printer size={16} />}
               sx={{
                 textTransform: 'none',

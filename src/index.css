@@ -122,3 +122,55 @@ html, body {
 *, *:before, *:after {
   box-sizing: inherit;
 }
+
+/* 🌟 CẤU HÌNH IN ẨN NÚT - GIỮ NGUYÊN 100% GIAO DIỆN HÓA ĐƠN */
+@media print {
+  /* 1. Thiết lập lề trang in */
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+
+  /* 2. Ép trình duyệt giữ nguyên màu nền, màu bảng (xanh/đỏ) khi in */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 3. Ẩn tất cả các thẻ cha xung quanh để không bị vướng giao diện web */
+  body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 4. Đưa vùng hóa đơn (.print-invoice-area) trùm toàn bộ trang in */
+  .print-invoice-area {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+  }
+
+  /* 5. ẨN CHÍNH XÁC NÚT IN PHIẾU & CÁC NÚT THAO TÁC DƯỚI CÙNG */
+  button,
+  .no-print,
+  .MuiSnackbar-root,
+  .MuiDialog-root {
+    display: none !important;
+  }
+
+  /* 6. Giữ cho bảng không bị ngắt đôi vô lý giữa các trang */
+  table {
+    page-break-inside: auto;
+  }
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+}

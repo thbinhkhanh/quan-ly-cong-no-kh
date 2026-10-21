@@ -37,6 +37,7 @@ import ExcelJS from 'exceljs';
 import { useCongNo } from '../contexts/CongNoContext';
 import { taiCongNo } from '../utils/taiCongNo';
 import { xuatExcelDoanhSoBanHang } from '../utils/xuatExcelDoanhSoBanHang';
+import { printDoanhSoBanHang } from '../utils/printDoanhSoBanHang';
 
 export default function DoanhSoBanHang() {
   const { items, updateCongNoData } = useCongNo();
@@ -785,7 +786,19 @@ export default function DoanhSoBanHang() {
               <Button
                 variant="outlined"
                 size="small"
-                onClick={() => window.print()}
+                onClick={() => printDoanhSoBanHang({
+                  displayData,
+                  totals: {
+                    totalAmount: totals.totalAmount,
+                    totalPaid: totals.totalPaid,
+                    totalDebt: totals.totalDebt
+                  },
+                  mainColTitle,
+                  filterType,
+                  startDate,
+                  endDate,
+                  searchTerm
+                })}
                 startIcon={<Printer size={16} />}
                 sx={{
                   textTransform: 'none',

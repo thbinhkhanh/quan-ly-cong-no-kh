@@ -30,6 +30,7 @@ import ExcelJS from 'exceljs';
 import { db } from "../firebase";
 import { collection, doc, setDoc, getDocs } from "firebase/firestore";
 import { xuatExcelDonGia } from '../utils/xuatExcelDonGia';
+import { printCapNhatDonGia } from '../utils/printCapNhatDonGia';
 
 const CACHE_KEY = "DANHMUC_DONGIA_CACHE";
 
@@ -285,7 +286,10 @@ export default function CapNhatDonGia() {
             <Tooltip title="In Bảng">
               <IconButton
                 size="small"
-                onClick={() => window.print()}
+                onClick={() => printCapNhatDonGia({
+                  items: filteredItems, // In danh sách đã lọc theo từ khóa (hoặc truyền 'items' nếu muốn in toàn bộ)
+                  searchTerm
+                })}
                 sx={{
                   border: '1px solid #64748b',
                   color: '#475569',

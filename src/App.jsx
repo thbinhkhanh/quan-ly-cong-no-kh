@@ -111,8 +111,7 @@ function AppContent() {
             minHeight: "48px !important",
             paddingTop: 0,
             paddingBottom: 0,
-            overflowX: "auto",
-            whiteSpace: "nowrap",
+            px: { xs: 1, sm: 2 },
           }}
         >
           {/* LEFT: LOGO + DASHBOARD */}
@@ -126,10 +125,10 @@ function AppContent() {
               title="Bấm để xem logo phóng to"
               sx={{
                 height: 34,
-                width: 34, // Đảm bảo giữ tỉ lệ vuông 1:1
+                width: 34,
                 objectFit: "contain",
                 flexShrink: 0,
-                ml: { xs: -1, sm: -2 },
+                ml: { xs: 0.5, sm: -1 },
                 mr: 1,
                 cursor: "pointer",
                 borderRadius: "4px",
@@ -138,7 +137,7 @@ function AppContent() {
                   transform: "scale(1.08)",
                 },
               }}
-            />        
+            />          
 
             <Button
               onClick={() => setActiveModule(config?.loggedIn ? 'dashboard' : 'login')}
@@ -150,7 +149,7 @@ function AppContent() {
 
           {/* RIGHT: USER AREA */}
           {config?.loggedIn ? (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, ml: "auto" }}>
               {currentAccount && (
                 <Box component="span" sx={{ color: "#fff", fontSize: "0.85rem", fontWeight: 500, display: { xs: "none", sm: "inline" } }}>
                   {currentAccount}
@@ -166,7 +165,7 @@ function AppContent() {
                   bgcolor: isThuậnPhát ? "#10b981" : "#FFD700",
                   display: "flex",
                   alignItems: "center",
-                  justify: "center",
+                  justifyContent: "center",
                   cursor: "pointer",
                   boxShadow: isThuậnPhát 
                     ? "0 2px 8px rgba(16, 185, 129, 0.4)" 

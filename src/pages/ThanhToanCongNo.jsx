@@ -32,6 +32,7 @@ import {
 import { useCongNo } from "../contexts/CongNoContext";
 import { taiCongNo, clearCongNoCache, formatCustomerId } from '../utils/taiCongNo';
 import ThanhToan from "../dialogs/ThanhToanCongNo"; 
+import { xuatExcelTongHopKhachHang } from '../utils/xuatExcelTongHopKhachHang';
 
 export default function ThanhToanCongNo() {
   const { customersMap, items, updateCongNoData } = useCongNo();
@@ -170,7 +171,11 @@ export default function ThanhToanCongNo() {
   const mainColTitle = "KHÁCH HÀNG";
 
   const handleExportExcel = () => {
-    alert("Chức năng xuất Excel danh sách công nợ đang được gọi.");
+    xuatExcelTongHopKhachHang({
+      displayData,
+      totals,
+      // setSnackbar (nếu component của thầy có state thông báo Snackbar, có thể truyền vào đây, nếu không có thể bỏ trống)
+    });
   };
 
   return (

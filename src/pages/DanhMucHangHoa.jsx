@@ -36,6 +36,7 @@ import { useKho } from '../contexts/KhoContext';
 // Import Firebase và Firestore (dùng cho tải và lưu dữ liệu)
 import { db } from "../firebase";
 import { collection, doc, setDoc, getDocs } from "firebase/firestore";
+import { xuatExcelDanhMucHangHoa } from '../utils/xuatExcelDanhMucHangHoa';
 
 /**
  * Hàm tạo Document ID an toàn không dấu, không khoảng trắng từ tên hàng
@@ -229,35 +230,11 @@ export default function DanhMucHangHoa() {
   };
 
   // Xuất file Excel
-  const handleExportExcel = async () => {
-    if (items.length === 0) return;
-
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('DanhMucHangHoa');
-
-    worksheet.columns = [
-      { header: 'STT', key: 'stt', width: 8 },
-      { header: 'TÊN HÀNG', key: 'name', width: 35 },
-      { header: 'CÔNG TY', key: 'company', width: 25 },
-      { header: 'ĐVT', key: 'unit', width: 12 },
-    ];
-
-    items.forEach((item, idx) => {
-      worksheet.addRow({
-        stt: item.stt || idx + 1,
-        name: item.name,
-        company: item.company,
-        unit: item.unit,
-      });
+  const handleExportExcel = () => {
+    xuatExcelDanhMucHangHoa({
+      items: filteredItems, // Xuất danh sách đã lọc (hoặc truyền 'items' để xuất toàn bộ)
+      setSnackbar
     });
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Danh_Muc_Hang_Hoa_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    link.click();
   };
 
   return (

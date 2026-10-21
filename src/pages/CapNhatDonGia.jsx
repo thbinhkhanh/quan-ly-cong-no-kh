@@ -29,6 +29,7 @@ import {
 import ExcelJS from 'exceljs';
 import { db } from "../firebase";
 import { collection, doc, setDoc, getDocs } from "firebase/firestore";
+import { xuatExcelDonGia } from '../utils/xuatExcelDonGia';
 
 const CACHE_KEY = "DANHMUC_DONGIA_CACHE";
 
@@ -190,37 +191,11 @@ export default function CapNhatDonGia() {
     }
   };
 
-  const handleExportExcel = async () => {
-    if (items.length === 0) return;
-
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('BangDonGia');
-
-    worksheet.columns = [
-      { header: 'STT', key: 'stt', width: 8 },
-      { header: 'TÊN HÀNG', key: 'name', width: 35 },
-      { header: 'CÔNG TY', key: 'company', width: 25 },
-      { header: 'ĐVT', key: 'unit', width: 12 },
-      { header: 'ĐƠN GIÁ', key: 'price', width: 18 },
-    ];
-
-    items.forEach((item, idx) => {
-      worksheet.addRow({
-        stt: item.stt || idx + 1,
-        name: item.name,
-        company: item.company,
-        unit: item.unit,
-        price: item.price,
-      });
+  const handleExportExcel = () => {
+    xuatExcelDonGia({
+      items: filteredItems, // Hoặc truyền 'items' nếu muốn xuất toàn bộ không lọc
+      setSnackbar
     });
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Bang_Cap_Nhat_Don_Gia_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    link.click();
   };
 
   const formatMoney = (val) => {

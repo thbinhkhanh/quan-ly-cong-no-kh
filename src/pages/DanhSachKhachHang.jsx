@@ -28,6 +28,7 @@ import ExcelJS from 'exceljs';
 // Import Firebase và Firestore
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
+import { xuatExcelDanhSachKhachHang } from '../utils/xuatExcelDanhSachKhachHang';
 
 export default function DanhSachKhachHang() {
   const [customers, setCustomers] = useState([]);
@@ -123,42 +124,11 @@ export default function DanhSachKhachHang() {
   }, [customers, searchTerm]);
 
   // Xuất file Excel
-  const handleExportExcel = async () => {
-    if (customers.length === 0) {
-      setSnackbar({
-        open: true,
-        message: "Chưa có dữ liệu để xuất file!",
-        severity: "warning",
-      });
-      return;
-    }
-
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('DanhSachKhachHang');
-
-    worksheet.columns = [
-      { header: 'STT', key: 'stt', width: 8 },
-      { header: 'TÊN KHÁCH HÀNG', key: 'name', width: 30 },
-      { header: 'SỐ ĐIỆN THOẠI', key: 'phone', width: 18 },
-      { header: 'ĐỊA CHỈ', key: 'address', width: 35 },
-    ];
-
-    customers.forEach((item, idx) => {
-      worksheet.addRow({
-        stt: item.stt || idx + 1,
-        name: item.name,
-        phone: item.phone,
-        address: item.address,
-      });
+  const handleExportExcel = () => {
+    xuatExcelDanhSachKhachHang({
+      customers: filteredCustomers, // Xuất danh sách đã tìm kiếm/lọc
+      setSnackbar
     });
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Danh_Sach_Khach_Hang_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    link.click();
   };
 
   const headerSx = {

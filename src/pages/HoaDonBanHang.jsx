@@ -323,7 +323,7 @@ export default function HoaDonBanHang() {
             >
               <MapPin size={13} />
               <Typography component="span" sx={{ fontSize: 'inherit' }}>
-                Bình Khánh, Cần Giờ, TP. HCM
+                140 Đường Rừng Sác, Bình Khánh, TP.HCM
               </Typography>
             </Box>
 

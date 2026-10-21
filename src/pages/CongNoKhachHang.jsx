@@ -46,6 +46,7 @@ import { db } from "../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { taiCongNo, clearCongNoCache, formatCustomerId } from '../utils/taiCongNo';
 import { importCongNoExcel } from '../utils/importCongNoExcel';
+import { xuatExcelCongNo } from '../utils/xuatExcelCongNo';
 
 // Import Dialog chỉnh sửa & Dialog Xóa
 import SuaGiaoDichCongNo from '../dialogs/SuaGiaoDichCongNo';
@@ -495,71 +496,14 @@ export default function CongNoKhachHang({ onBack }) {
 
   const lastDebt = totalAmount - totalPaid;
 
-  const handleExportExcel = async () => {
-    if (filteredItems.length === 0) {
-      setSnackbar({
-        open: true,
-        message: "Không có dữ liệu để xuất Excel!",
-        severity: "warning",
-      });
-      return;
-    }
-
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('CongNoKhachHang');
-
-    worksheet.addRow(['CỬA HÀNG: THUẬN PHÁT']);
-    worksheet.addRow(['Địa chỉ: 140 Đường Rừng Sác, Bình Khánh, HCG']);
-    worksheet.addRow(['Điện thoại: 0938702119 - 0982742119 - 0943242119']);
-    worksheet.addRow([]);
-    worksheet.addRow(['BẢNG CÔNG NỢ KHÁCH HÀNG']);
-    worksheet.addRow([`Tên khách hàng: ${selectedCustomer === 'ALL' ? 'Tất cả khách hàng' : selectedCustomer}`]);
-    worksheet.addRow([]);
-
-    const headerRow = worksheet.addRow([
-      "STT", "Ngày", "Khách hàng", "Tên hàng", "ĐVT", "SLg", "Đơn giá", "Thành tiền", "Thanh toán", "Còn lại", "Ghi chú"
-    ]);
-
-    headerRow.eachCell((cell) => {
-      cell.font = { bold: true, color: { argb: '1E40AF' } };
-      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'DBEAFE' } };
-      cell.alignment = { horizontal: 'center', vertical: 'middle' };
-    });
-
-    filteredItems.forEach((item) => {
-      worksheet.addRow([
-        item.stt,
-        item.date,
-        item.customer,
-        item.itemName,
-        item.unit,
-        item.qty,
-        item.price,
-        item.amountNum,
-        item.paidNum,
-        item.debt,
-        item.note
-      ]);
-    });
-
-    const totalRow = worksheet.addRow([
-      "", "", "", "", "", "", "TỔNG CỘNG:", totalAmount, totalPaid, lastDebt, ""
-    ]);
-    totalRow.font = { bold: true };
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `CongNo_${selectedCustomer}_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.xlsx`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-
-    setSnackbar({
-      open: true,
-      message: "Đã xuất tệp Excel thành công!",
-      severity: "success",
+  const handleExportExcel = () => {
+    xuatExcelCongNo({
+      filteredItems,
+      selectedCustomer,
+      totalAmount,
+      totalPaid,
+      lastDebt,
+      setSnackbar
     });
   };
 

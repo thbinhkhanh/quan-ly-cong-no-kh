@@ -36,6 +36,7 @@ import {
 import ExcelJS from 'exceljs';
 import { useCongNo } from '../contexts/CongNoContext';
 import { taiCongNo } from '../utils/taiCongNo';
+import { xuatExcelDoanhSoBanHang } from '../utils/xuatExcelDoanhSoBanHang';
 
 export default function DoanhSoBanHang() {
   const { items, updateCongNoData } = useCongNo();
@@ -296,37 +297,13 @@ export default function DoanhSoBanHang() {
   }, [filterType]);
 
   // Xuất Excel
-  const handleExportExcel = async () => {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('TongHopDoanhSo');
-
-    worksheet.columns = [
-      { header: 'STT', key: 'stt', width: 8 },
-      { header: mainColTitle, key: 'name', width: 32 },
-      { header: 'THÀNH TIỀN', key: 'amountNum', width: 22 },
-      { header: 'THANH TOÁN', key: 'paidNum', width: 22 },
-      { header: 'CÒN LẠI', key: 'debt', width: 22 },
-    ];
-
-    displayData.forEach((item, index) => {
-      const amount = parseNumber(item.amountNum);
-      const paid = parseNumber(item.paidNum);
-      worksheet.addRow({
-        stt: index + 1,
-        name: item.name,
-        amountNum: amount,
-        paidNum: paid,
-        debt: amount - paid,
-      });
+  const handleExportExcel = () => {
+    xuatExcelDoanhSoBanHang({
+      displayData,
+      mainColTitle,
+      totals,
+      // setSnackbar (nếu có state setSnackbar)
     });
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Tong_Hop_Doanh_So_${filterType}_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    link.click();
   };
 
   return (

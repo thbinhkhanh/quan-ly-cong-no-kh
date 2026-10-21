@@ -537,28 +537,30 @@ export default function ThanhToanCongNo() {
                         {formatMoney(debtVal)}
                       </TableCell>
                       <TableCell align="center" sx={{ py: 0.8, px: 1.5 }}>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          onClick={() => {
-                            setSelectedCustomerForPayment(item.name);
-                            setOpenPaymentDialog(true);
-                          }}
-                          sx={{
-                            borderRadius: '8px',
-                            textTransform: 'none',
-                            fontWeight: 600,
-                            fontSize: '0.75rem',
-                            py: 0.3,
-                            background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
-                            boxShadow: '0 2px 6px rgba(25,118,210,0.2)',
-                            '&:hover': {
-                              background: 'linear-gradient(135deg, #1565c0, #1976d2)',
-                            }
-                          }}
-                        >
-                          Thanh toán
-                        </Button>
+                        {debtVal >= 0 && (
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={() => {
+                              setSelectedCustomerForPayment(item.name);
+                              setOpenPaymentDialog(true);
+                            }}
+                            sx={{
+                              borderRadius: '8px',
+                              textTransform: 'none',
+                              fontWeight: 600,
+                              fontSize: '0.75rem',
+                              py: 0.3,
+                              background: 'linear-gradient(135deg, #1976d2, #42a5f5)',
+                              boxShadow: '0 2px 6px rgba(25,118,210,0.2)',
+                              '&:hover': {
+                                background: 'linear-gradient(135deg, #1565c0, #1976d2)',
+                              }
+                            }}
+                          >
+                            Thanh toán
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   );

@@ -328,7 +328,7 @@ export default function CapNhatDonGia() {
         {/* TIÊU ĐỀ */}
         <Box sx={{ textAlign: 'center', mb: 2, mt: -2 }}>
           <Typography variant="h6" sx={{ fontWeight: 900, color: '#1e3a8a', letterSpacing: 1, textTransform: 'uppercase' }}>
-            BẢNG CẬP NHẬT ĐƠN GIÁ HÀNG HÓA
+            BẢNG CẬP NHẬT ĐƠN GIÁ
           </Typography>
         </Box>
 

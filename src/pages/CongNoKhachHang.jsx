@@ -673,6 +673,22 @@ export default function CongNoKhachHang({ onBack }) {
             </Tooltip>
           </Box>
 
+          {/* TIÊU ĐỀ TRANG (ĐÃ CHUYỂN LÊN CÙNG HÀNG) */}
+          <Typography
+            sx={{
+              fontSize: '1.25rem',
+              fontWeight: 900,
+              color: '#1e3a8a',
+              textTransform: 'uppercase',
+              letterSpacing: 0.5,
+              m: 0,
+              textAlign: 'center',
+              flexGrow: 1,
+            }}
+          >
+            BẢNG CÔNG NỢ KHÁCH HÀNG
+          </Typography>
+
           {/* BADGE THỐNG KÊ SỐ KHÁCH HÀNG (CĂN BÊN PHẢI) */}
           <Box
             sx={{
@@ -705,22 +721,8 @@ export default function CongNoKhachHang({ onBack }) {
           </Box>
         </Box>
 
-        {/* TIÊU ĐỀ TRANG & BỘ LỌC TÊN KHÁCH HÀNG */}
+        {/* BỘ LỌC TÊN KHÁCH HÀNG */}
         <Box sx={{ width: '100%', textAlign: 'center', mb: 3, mt: -1 }}>
-          <Typography
-            sx={{
-              fontSize: '1.25rem',
-              fontWeight: 900,
-              color: '#1e3a8a',
-              textTransform: 'uppercase',
-              letterSpacing: 0.5,
-              mb: 1,
-              mt: -2,
-            }}
-          >
-            BẢNG CÔNG NỢ KHÁCH HÀNG
-          </Typography>
-
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
             <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#dc2626' }}>
               Tên khách hàng:

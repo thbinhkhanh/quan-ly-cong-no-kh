@@ -18,7 +18,9 @@ import {
   Checkbox,
   CircularProgress,
   Stack,
-  Card
+  Card,
+  IconButton, // 👈 Thêm dòng này
+  Tooltip     // 👈 Thêm dòng này
 } from '@mui/material';
 import {
   Search,
@@ -31,7 +33,7 @@ import {
   TrendingUp,
   CreditCard,
   Wallet,
-  RotateCw
+  RefreshCw,
 } from 'lucide-react';
 import ExcelJS from 'exceljs';
 import { useCongNo } from '../contexts/CongNoContext';
@@ -311,68 +313,145 @@ export default function DoanhSoBanHang() {
     <Box
       sx={{
         width: '100%',
-        maxWidth: '1200px',
+        maxWidth: '100%', // Đã đổi thành 100% để phủ kín toàn bộ màn hình
         mx: 'auto',
-        p: { xs: 1.5, sm: 2.5 },
-        bgcolor: '#f1f5f9',
+        p: { xs: 1, sm: 2 },
+        bgcolor: '#eff6ff', // Màu nền xanh trùng khớp hoàn toàn với vùng 2
         minHeight: '100vh',
         boxSizing: 'border-box',
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      {/* THANH HEADER: TIÊU ĐỀ (BÊN TRÁI) + 3 THẺ THỐNG KÊ (BÊN PHẢI) */}
-      <Box
+      <Paper
+        elevation={0}
         sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', lg: 'row' },
-          justify: 'space-between',
-          alignItems: { xs: 'stretch', lg: 'center' },
-          gap: 2,
-          mb: 2,
+          width: '100%',
+          maxWidth: '1200px', // Đưa giới hạn chiều rộng 1200px vào thẻ Paper bên trong
+          mx: 'auto',
+          p: { xs: 2, sm: 3 },
+          border: '1px solid #e2e8f0',
+          borderRadius: 2,
+          bgcolor: '#fff',
+          boxShadow: '0 8px 30px rgba(15, 23, 42, 0.045)',
+          boxSizing: 'border-box',
         }}
       >
-        {/* TIÊU ĐỀ DOANH SỐ BÁN HÀNG */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        {/* 🌟 HÀNG ĐẦU TIÊN: 3 ICON (LUÔN CĂN TRÁI) & TIÊU ĐỀ (CĂN GIỮA) */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 1.5,
+            mb: 2,
+            position: 'relative',
+          }}
+        >
+          {/* 3 ICON THAO TÁC LUÔN CĂN TRÁI */}
           <Box
             sx={{
-              p: 1.25,
-              borderRadius: 2,
-              bgcolor: '#eff6ff',
-              color: '#2563eb',
               display: 'flex',
+              gap: 1,
               alignItems: 'center',
-              justifyContent: 'center',
+              width: { xs: '100%', sm: 'auto' },
+              justifyContent: 'flex-start',
             }}
           >
-            <TrendingUp size={24} />
+            <Tooltip title={loading ? "Đang làm mới..." : "Làm mới dữ liệu"}>
+              <span>
+                <IconButton
+                  size="small"
+                  onClick={handleRefresh}
+                  disabled={loading}
+                  sx={{
+                    bgcolor: '#2563eb',
+                    color: '#fff',
+                    '&:hover': { bgcolor: '#1d4ed8' },
+                    '&.Mui-disabled': { bgcolor: '#e2e8f0', color: '#94a3b8' },
+                    width: 32,
+                    height: 32,
+                  }}
+                >
+                  {loading ? <CircularProgress size={16} color="inherit" /> : <RefreshCw size={16} />}
+                </IconButton>
+              </span>
+            </Tooltip>
+
+            <Tooltip title="Xuất Excel">
+              <IconButton
+                size="small"
+                onClick={handleExportExcel}
+                sx={{
+                  bgcolor: '#0d9488',
+                  color: '#fff',
+                  '&:hover': { bgcolor: '#0f766e' },
+                  width: 32,
+                  height: 32,
+                }}
+              >
+                <Download size={16} />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="In Bảng">
+              <IconButton
+                size="small"
+                onClick={() => printDoanhSoBanHang({
+                  displayData,
+                  totals: {
+                    totalAmount: totals.totalAmount,
+                    totalPaid: totals.totalPaid,
+                    totalDebt: totals.totalDebt
+                  },
+                  mainColTitle,
+                  filterType,
+                  startDate,
+                  endDate,
+                  searchTerm
+                })}
+                sx={{
+                  border: '1px solid #64748b',
+                  color: '#475569',
+                  '&:hover': { bgcolor: '#f1f5f9' },
+                  width: 32,
+                  height: 32,
+                }}
+              >
+                <Printer size={16} />
+              </IconButton>
+            </Tooltip>
           </Box>
-          <Box>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 800,
-                color: '#0f172a',
-                fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-                lineHeight: 1.2,
-              }}
-            >
-              DOANH SỐ BÁN HÀNG
-            </Typography>
-            <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.8rem' }}>
-              Báo cáo tổng hợp doanh thu theo khách hàng, mặt hàng và thời gian
-            </Typography>
-          </Box>
+
+          {/* TIÊU ĐỀ DOANH SỐ BÁN HÀNG - CĂN GIỮA */}
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 800,
+              color: '#0f172a',
+              fontSize: { xs: '1.1rem', sm: '1.25rem' },
+              letterSpacing: '0.5px',
+              textTransform: 'uppercase',
+              lineHeight: 1.2,
+              m: 0,
+              textAlign: 'center',
+              flexGrow: 1,
+              width: { xs: '100%', sm: 'auto' },
+            }}
+          >
+            DOANH SỐ BÁN HÀNG
+          </Typography>
         </Box>
 
-        {/* 3 THẺ THỐNG KÊ KPI */}
+        {/* 🌟 3 THẺ THỐNG KÊ KPI (RỘNG 50%, CĂN GIỮA) */}
         <Box
           sx={{
             display: 'grid',
             gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
             gap: 1.5,
-            minWidth: { lg: '620px' },
+            maxWidth: { sm: '50%' },
+            mx: 'auto',
+            mb: 2,
           }}
         >
           <Card
@@ -477,529 +556,380 @@ export default function DoanhSoBanHang() {
             </Box>
           </Card>
         </Box>
-      </Box>
 
-      {/* KHU VỰC CHÍNH: SIDEBAR & BẢNG */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '270px 1fr' },
-          gap: 2,
-          alignItems: 'start',
-        }}
-      >
-        {/* SIDEBAR BỘ LỌC */}
-        <Paper
-          elevation={0}
+        {/* 🌟 KHU VỰC CHÍNH: SIDEBAR BỘ LỌC & BẢNG DỮ LIỆU */}
+        <Box
           sx={{
-            p: 2,
-            borderRadius: 2.5,
-            bgcolor: '#ffffff',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '270px 1fr' },
+            gap: 2,
+            alignItems: 'start',
           }}
         >
-          <Typography
-            variant="subtitle2"
-            sx={{
-              fontWeight: 700,
-              color: '#1e293b',
-              mb: 1.5,
-              pb: 1,
-              borderBottom: '1px solid #f1f5f9',
-              fontSize: '0.85rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-            }}
-          >
-            BỘ LỌC BÁO CÁO
-          </Typography>
-
-          <RadioGroup
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            sx={{ gap: 1.25 }}
-          >
-            {/* Tùy chọn Theo Ngày */}
-            <Paper
-              variant="outlined"
-              sx={{
-                p: 1.25,
-                borderRadius: 1.75,
-                borderColor: filterType === 'day' ? '#2563eb' : '#e2e8f0',
-                bgcolor: filterType === 'day' ? '#eff6ff' : 'transparent',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <FormControlLabel
-                value="day"
-                control={<Radio size="small" />}
-                label={
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Calendar size={16} color={filterType === 'day' ? '#2563eb' : '#64748b'} />
-                    <Typography sx={{ fontSize: '0.85rem', fontWeight: filterType === 'day' ? 700 : 500 }}>
-                      Theo ngày
-                    </Typography>
-                  </Box>
-                }
-                sx={{ m: 0, width: '100%' }}
-              />
-
-              {filterType === 'day' && (
-                <Stack spacing={1.5} sx={{ mt: 2, pt: 0.5 }}>
-                  <TextField
-                    label="Từ ngày"
-                    type="date"
-                    size="small"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    InputLabelProps={{ shrink: true }}
-                    fullWidth
-                    sx={{
-                      bgcolor: '#fff',
-                      '& .MuiInputBase-input': { fontSize: '0.8rem' },
-                      '& .MuiInputLabel-root': { fontSize: '0.8rem' }
-                    }}
-                  />
-                  <TextField
-                    label="Đến ngày"
-                    type="date"
-                    size="small"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    InputLabelProps={{ shrink: true }}
-                    fullWidth
-                    sx={{
-                      bgcolor: '#fff',
-                      '& .MuiInputBase-input': { fontSize: '0.8rem' },
-                      '& .MuiInputLabel-root': { fontSize: '0.8rem' }
-                    }}
-                  />
-                </Stack>
-              )}
-            </Paper>
-
-            {/* Tùy chọn Theo Khách Hàng */}
-            <Paper
-              variant="outlined"
-              sx={{
-                p: 1.25,
-                borderRadius: 1.75,
-                borderColor: filterType === 'customer' ? '#2563eb' : '#e2e8f0',
-                bgcolor: filterType === 'customer' ? '#eff6ff' : 'transparent',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <FormControlLabel
-                value="customer"
-                control={<Radio size="small" />}
-                label={
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Users size={16} color={filterType === 'customer' ? '#2563eb' : '#64748b'} />
-                    <Typography sx={{ fontSize: '0.85rem', fontWeight: filterType === 'customer' ? 700 : 500 }}>
-                      Theo khách hàng
-                    </Typography>
-                  </Box>
-                }
-                sx={{ m: 0, width: '100%' }}
-              />
-
-              {filterType === 'customer' && (
-                <Stack spacing={0.25} sx={{ mt: 0.75, pl: 2.75 }}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        size="small"
-                        checked={sortByName}
-                        onChange={(e) => {
-                          setSortByName(e.target.checked);
-                          if (e.target.checked) setSortByAmount(false);
-                        }}
-                      />
-                    }
-                    label={<Typography sx={{ fontSize: '0.8rem', color: '#334155' }}>Sắp xếp theo tên KH</Typography>}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        size="small"
-                        checked={sortByAmount}
-                        onChange={(e) => {
-                          setSortByAmount(e.target.checked);
-                          if (e.target.checked) setSortByName(false);
-                        }}
-                      />
-                    }
-                    label={<Typography sx={{ fontSize: '0.8rem', color: '#334155' }}>Sắp xếp theo số tiền</Typography>}
-                  />
-                </Stack>
-              )}
-            </Paper>
-
-            {/* Tùy chọn Theo Tên Hàng */}
-            <Paper
-              variant="outlined"
-              sx={{
-                p: 1.25,
-                borderRadius: 1.75,
-                borderColor: filterType === 'item' ? '#2563eb' : '#e2e8f0',
-                bgcolor: filterType === 'item' ? '#eff6ff' : 'transparent',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <FormControlLabel
-                value="item"
-                control={<Radio size="small" />}
-                label={
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Package size={16} color={filterType === 'item' ? '#2563eb' : '#64748b'} />
-                    <Typography sx={{ fontSize: '0.85rem', fontWeight: filterType === 'item' ? 700 : 500 }}>
-                      Theo tên hàng
-                    </Typography>
-                  </Box>
-                }
-                sx={{ m: 0, width: '100%' }}
-              />
-
-              {filterType === 'item' && (
-                <Stack spacing={0.25} sx={{ mt: 0.75, pl: 2.75 }}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        size="small"
-                        checked={sortByName}
-                        onChange={(e) => {
-                          setSortByName(e.target.checked);
-                          if (e.target.checked) setSortByAmount(false);
-                        }}
-                      />
-                    }
-                    label={<Typography sx={{ fontSize: '0.8rem', color: '#334155' }}>Sắp xếp theo tên Hàng</Typography>}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        size="small"
-                        checked={sortByAmount}
-                        onChange={(e) => {
-                          setSortByAmount(e.target.checked);
-                          if (e.target.checked) setSortByName(false);
-                        }}
-                      />
-                    }
-                    label={<Typography sx={{ fontSize: '0.8rem', color: '#334155' }}>Sắp xếp theo số tiền</Typography>}
-                  />
-                </Stack>
-              )}
-            </Paper>
-          </RadioGroup>
-        </Paper>
-
-        {/* BẢNG DỮ LIỆU CHÍNH */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-          {/* THANH THAO TÁC, TÌM KIẾM & NÚT BẤM */}
+          {/* SIDEBAR BỘ LỌC */}
           <Paper
             elevation={0}
             sx={{
-              p: 1.5,
+              p: 2,
               borderRadius: 2.5,
               bgcolor: '#ffffff',
               border: '1px solid #e2e8f0',
               boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-              display: 'flex',
-              justify: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: 1.5,
             }}
           >
-            <TextField
-              size="small"
-              placeholder={`Tìm kiếm ${mainColTitle.toLowerCase()}...`}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+            <Typography
+              variant="subtitle2"
               sx={{
-                width: { xs: '100%', sm: 250 },
-                bgcolor: '#f8fafc',
-                '& .MuiInputBase-input': { fontSize: '0.825rem', py: 0.6 }
+                fontWeight: 700,
+                color: '#1e293b',
+                mb: 1.5,
+                pb: 1,
+                borderBottom: '1px solid #f1f5f9',
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
               }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search size={16} color="#94a3b8" />
-                  </InputAdornment>
-                ),
-              }}
-            />
+            >
+              BỘ LỌC BÁO CÁO
+            </Typography>
 
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', ml: 'auto' }}>
-              {/* NÚT LÀM MỚI DỮ LIỆU */}
-              <Button
+            <RadioGroup
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              sx={{ gap: 1.25 }}
+            >
+              {/* Tùy chọn Theo Ngày */}
+              <Paper
                 variant="outlined"
-                size="small"
-                onClick={handleRefresh}
-                disabled={loading}
-                startIcon={
-                  loading ? (
-                    <CircularProgress size={14} color="inherit" />
-                  ) : (
-                    <RotateCw size={16} />
-                  )
-                }
                 sx={{
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  fontSize: '0.825rem',
+                  p: 1.25,
                   borderRadius: 1.75,
-                  borderColor: '#2563eb',
-                  color: '#2563eb',
-                  '&:hover': { bgcolor: '#eff6ff', borderColor: '#1d4ed8' },
-                  px: 1.5,
-                  py: 0.5,
+                  borderColor: filterType === 'day' ? '#2563eb' : '#e2e8f0',
+                  bgcolor: filterType === 'day' ? '#eff6ff' : 'transparent',
+                  transition: 'all 0.15s ease',
                 }}
               >
-                Làm mới
-              </Button>
+                <FormControlLabel
+                  value="day"
+                  control={<Radio size="small" />}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Calendar size={16} color={filterType === 'day' ? '#2563eb' : '#64748b'} />
+                      <Typography sx={{ fontSize: '0.85rem', fontWeight: filterType === 'day' ? 700 : 500 }}>
+                        Theo ngày
+                      </Typography>
+                    </Box>
+                  }
+                  sx={{ m: 0, width: '100%' }}
+                />
 
-              {/* NÚT XUẤT EXCEL */}
-              <Button
-                variant="contained"
-                size="small"
-                onClick={handleExportExcel}
-                startIcon={<Download size={16} />}
-                sx={{
-                  bgcolor: '#0284c7',
-                  '&:hover': { bgcolor: '#0369a1' },
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  fontSize: '0.825rem',
-                  borderRadius: 1.75,
-                  px: 1.5,
-                  py: 0.5,
-                }}
-              >
-                Xuất Excel
-              </Button>
+                {filterType === 'day' && (
+                  <Stack spacing={1.5} sx={{ mt: 2, pt: 0.5 }}>
+                    <TextField
+                      label="Từ ngày"
+                      type="date"
+                      size="small"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      fullWidth
+                      sx={{
+                        bgcolor: '#fff',
+                        '& .MuiInputBase-input': { fontSize: '0.8rem' },
+                        '& .MuiInputLabel-root': { fontSize: '0.8rem' }
+                      }}
+                    />
+                    <TextField
+                      label="Đến ngày"
+                      type="date"
+                      size="small"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      fullWidth
+                      sx={{
+                        bgcolor: '#fff',
+                        '& .MuiInputBase-input': { fontSize: '0.8rem' },
+                        '& .MuiInputLabel-root': { fontSize: '0.8rem' }
+                      }}
+                    />
+                  </Stack>
+                )}
+              </Paper>
 
-              {/* NÚT IN BẢNG */}
-              <Button
+              {/* Tùy chọn Theo Khách Hàng */}
+              <Paper
                 variant="outlined"
-                size="small"
-                onClick={() => printDoanhSoBanHang({
-                  displayData,
-                  totals: {
-                    totalAmount: totals.totalAmount,
-                    totalPaid: totals.totalPaid,
-                    totalDebt: totals.totalDebt
-                  },
-                  mainColTitle,
-                  filterType,
-                  startDate,
-                  endDate,
-                  searchTerm
-                })}
-                startIcon={<Printer size={16} />}
                 sx={{
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  fontSize: '0.825rem',
+                  p: 1.25,
                   borderRadius: 1.75,
-                  borderColor: '#cbd5e1',
-                  color: '#475569',
-                  '&:hover': { bgcolor: '#f8fafc', borderColor: '#94a3b8' },
-                  px: 1.5,
-                  py: 0.5,
+                  borderColor: filterType === 'customer' ? '#2563eb' : '#e2e8f0',
+                  bgcolor: filterType === 'customer' ? '#eff6ff' : 'transparent',
+                  transition: 'all 0.15s ease',
                 }}
               >
-                In Bảng
-              </Button>
-            </Box>
+                <FormControlLabel
+                  value="customer"
+                  control={<Radio size="small" />}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Users size={16} color={filterType === 'customer' ? '#2563eb' : '#64748b'} />
+                      <Typography sx={{ fontSize: '0.85rem', fontWeight: filterType === 'customer' ? 700 : 500 }}>
+                        Theo khách hàng
+                      </Typography>
+                    </Box>
+                  }
+                  sx={{ m: 0, width: '100%' }}
+                />
+
+                {filterType === 'customer' && (
+                  <Stack spacing={0.25} sx={{ mt: 0.75, pl: 2.75 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          size="small"
+                          checked={sortByName}
+                          onChange={(e) => {
+                            setSortByName(e.target.checked);
+                            if (e.target.checked) setSortByAmount(false);
+                          }}
+                        />
+                      }
+                      label={<Typography sx={{ fontSize: '0.8rem', color: '#334155' }}>Sắp xếp theo tên KH</Typography>}
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          size="small"
+                          checked={sortByAmount}
+                          onChange={(e) => {
+                            setSortByAmount(e.target.checked);
+                            if (e.target.checked) setSortByName(false);
+                          }}
+                        />
+                      }
+                      label={<Typography sx={{ fontSize: '0.8rem', color: '#334155' }}>Sắp xếp theo số tiền</Typography>}
+                    />
+                  </Stack>
+                )}
+              </Paper>
+
+              {/* Tùy chọn Theo Tên Hàng */}
+              <Paper
+                variant="outlined"
+                sx={{
+                  p: 1.25,
+                  borderRadius: 1.75,
+                  borderColor: filterType === 'item' ? '#2563eb' : '#e2e8f0',
+                  bgcolor: filterType === 'item' ? '#eff6ff' : 'transparent',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <FormControlLabel
+                  value="item"
+                  control={<Radio size="small" />}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Package size={16} color={filterType === 'item' ? '#2563eb' : '#64748b'} />
+                      <Typography sx={{ fontSize: '0.85rem', fontWeight: filterType === 'item' ? 700 : 500 }}>
+                        Theo tên hàng
+                      </Typography>
+                    </Box>
+                  }
+                  sx={{ m: 0, width: '100%' }}
+                />
+
+                {filterType === 'item' && (
+                  <Stack spacing={0.25} sx={{ mt: 0.75, pl: 2.75 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          size="small"
+                          checked={sortByName}
+                          onChange={(e) => {
+                            setSortByName(e.target.checked);
+                            if (e.target.checked) setSortByAmount(false);
+                          }}
+                        />
+                      }
+                      label={<Typography sx={{ fontSize: '0.8rem', color: '#334155' }}>Sắp xếp theo tên Hàng</Typography>}
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          size="small"
+                          checked={sortByAmount}
+                          onChange={(e) => {
+                            setSortByAmount(e.target.checked);
+                            if (e.target.checked) setSortByName(false);
+                          }}
+                        />
+                      }
+                      label={<Typography sx={{ fontSize: '0.8rem', color: '#334155' }}>Sắp xếp theo số tiền</Typography>}
+                    />
+                  </Stack>
+                )}
+              </Paper>
+            </RadioGroup>
           </Paper>
 
-          {/* BẢNG DỮ LIỆU HIỂN THỊ */}
-          <TableContainer
-            component={Paper}
-            elevation={0}
-            sx={{
-              borderRadius: 2.5,
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-              maxHeight: 580,
-              bgcolor: '#fff',
-            }}
-          >
-            <Table stickyHeader size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    align="center"
-                    sx={{
-                      bgcolor: '#1e293b',
-                      color: '#f8fafc',
-                      fontWeight: 700,
-                      fontSize: '0.825rem',
-                      py: 0.8,
-                      px: 1.5,
-                      width: '65px',
-                    }}
-                  >
-                    STT
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={{
-                      bgcolor: '#1e293b',
-                      color: '#f8fafc',
-                      fontWeight: 700,
-                      fontSize: '0.825rem',
-                      py: 0.8,
-                      px: 1.5,
-                    }}
-                  >
-                    {mainColTitle}
-                  </TableCell>
-                  <TableCell
-                    align="right"
-                    sx={{
-                      bgcolor: '#1e293b',
-                      color: '#f8fafc',
-                      fontWeight: 700,
-                      fontSize: '0.825rem',
-                      py: 0.8,
-                      px: 1.5,
-                      width: '165px',
-                    }}
-                  >
-                    THÀNH TIỀN
-                  </TableCell>
-                  <TableCell
-                    align="right"
-                    sx={{
-                      bgcolor: '#1e293b',
-                      color: '#f8fafc',
-                      fontWeight: 700,
-                      fontSize: '0.825rem',
-                      py: 0.8,
-                      px: 1.5,
-                      width: '165px',
-                    }}
-                  >
-                    THANH TOÁN
-                  </TableCell>
-                  <TableCell
-                    align="right"
-                    sx={{
-                      bgcolor: '#1e293b',
-                      color: '#f8fafc',
-                      fontWeight: 700,
-                      fontSize: '0.825rem',
-                      py: 0.8,
-                      px: 1.5,
-                      width: '165px',
-                    }}
-                  >
-                    CÒN LẠI
-                  </TableCell>
-                </TableRow>
-              </TableHead>
+          {/* BẢNG DỮ LIỆU CHÍNH */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            {/* Ô TÌM KIẾM */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 1.5,
+                borderRadius: 2.5,
+                bgcolor: '#ffffff',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <TextField
+                size="small"
+                placeholder={`Tìm kiếm ${mainColTitle.toLowerCase()}...`}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                sx={{
+                  width: { xs: '100%', sm: 280 },
+                  bgcolor: '#f8fafc',
+                  '& .MuiInputBase-input': { fontSize: '0.825rem', py: 0.6 }
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search size={16} color="#94a3b8" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Paper>
 
-              <TableBody>
-                {loading && displayData.length === 0 ? (
+            {/* BẢNG DỮ LIỆU HIỂN THỊ */}
+            <TableContainer
+              component={Paper}
+              elevation={0}
+              sx={{
+                borderRadius: 2.5,
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                maxHeight: 580,
+                bgcolor: '#fff',
+              }}
+            >
+              <Table stickyHeader size="small">
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                      <CircularProgress size={30} sx={{ mb: 1, color: '#2563eb' }} />
-                      <Typography sx={{ fontSize: '0.85rem', color: '#64748b' }}>
-                        Đang đồng bộ dữ liệu...
-                      </Typography>
+                    <TableCell align="center" sx={{ bgcolor: '#1e293b', color: '#f8fafc', fontWeight: 700, fontSize: '0.825rem', py: 0.8, px: 1.5, width: '65px' }}>
+                      STT
+                    </TableCell>
+                    <TableCell align="left" sx={{ bgcolor: '#1e293b', color: '#f8fafc', fontWeight: 700, fontSize: '0.825rem', py: 0.8, px: 1.5 }}>
+                      {mainColTitle}
+                    </TableCell>
+                    <TableCell align="right" sx={{ bgcolor: '#1e293b', color: '#f8fafc', fontWeight: 700, fontSize: '0.825rem', py: 0.8, px: 1.5, width: '165px' }}>
+                      THÀNH TIỀN
+                    </TableCell>
+                    <TableCell align="right" sx={{ bgcolor: '#1e293b', color: '#f8fafc', fontWeight: 700, fontSize: '0.825rem', py: 0.8, px: 1.5, width: '165px' }}>
+                      THANH TOÁN
+                    </TableCell>
+                    <TableCell align="right" sx={{ bgcolor: '#1e293b', color: '#f8fafc', fontWeight: 700, fontSize: '0.825rem', py: 0.8, px: 1.5, width: '165px' }}>
+                      CÒN LẠI
                     </TableCell>
                   </TableRow>
-                ) : displayData.length > 0 ? (
-                  displayData.map((item, index) => {
-                    const amount = parseNumber(item.amountNum);
-                    const paid = parseNumber(item.paidNum);
-                    const debtVal = amount - paid;
+                </TableHead>
 
-                    return (
-                      <TableRow
-                        key={item.name || index}
-                        hover
-                        sx={{
-                          '&:nth-of-type(even)': { bgcolor: '#f8fafc' },
-                          transition: 'background-color 0.15s ease',
-                        }}
-                      >
-                        <TableCell align="center" sx={{ fontWeight: 700, color: '#64748b', py: 0.8, px: 1.5, fontSize: '0.85rem' }}>
-                          {index + 1}
-                        </TableCell>
+                <TableBody>
+                  {loading && displayData.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                        <CircularProgress size={30} sx={{ mb: 1, color: '#2563eb' }} />
+                        <Typography sx={{ fontSize: '0.85rem', color: '#64748b' }}>
+                          Đang đồng bộ dữ liệu...
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : displayData.length > 0 ? (
+                    displayData.map((item, index) => {
+                      const amount = parseNumber(item.amountNum);
+                      const paid = parseNumber(item.paidNum);
+                      const debtVal = amount - paid;
 
-                        <TableCell
-                          align="left"
-                          sx={{ fontWeight: 700, color: '#0f172a', fontSize: '0.875rem', py: 0.8, px: 1.5 }}
-                        >
-                          {item.name}
-                        </TableCell>
-
-                        <TableCell
-                          align="right"
-                          sx={{ fontWeight: 700, color: '#1e293b', py: 0.8, px: 1.5, fontSize: '0.875rem' }}
-                        >
-                          {formatMoney(amount)}
-                        </TableCell>
-                        <TableCell
-                          align="right"
-                          sx={{ fontWeight: 700, color: '#16a34a', py: 0.8, px: 1.5, fontSize: '0.875rem' }}
-                        >
-                          {formatMoney(paid)}
-                        </TableCell>
-                        <TableCell
-                          align="right"
+                      return (
+                        <TableRow
+                          key={item.name || index}
+                          hover
                           sx={{
-                            fontWeight: 700,
-                            color: debtVal > 0 ? '#dc2626' : '#475569',
-                            py: 0.8,
-                            px: 1.5,
-                            fontSize: '0.875rem',
+                            '&:nth-of-type(even)': { bgcolor: '#f8fafc' },
+                            transition: 'background-color 0.15s ease',
                           }}
                         >
-                          {formatMoney(debtVal)}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                      <FileSpreadsheet size={40} color="#cbd5e1" style={{ marginBottom: 8 }} />
-                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#64748b' }}>
-                        Không có dữ liệu báo cáo phù hợp
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
+                          <TableCell align="center" sx={{ fontWeight: 700, color: '#64748b', py: 0.8, px: 1.5, fontSize: '0.85rem' }}>
+                            {index + 1}
+                          </TableCell>
 
-                {/* DÒNG TỔNG CỘNG HỆ THỐNG */}
-                {displayData.length > 0 && (
-                  <TableRow sx={{ bgcolor: '#f0f9ff', borderTop: '2px solid #0284c7' }}>
-                    <TableCell colSpan={2} align="center" sx={{ fontWeight: 800, color: '#0369a1', fontSize: '0.875rem', letterSpacing: '0.5px', py: 0.9, px: 1.5 }}>
-                      TỔNG CỘNG HỆ THỐNG
-                    </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 800, color: '#0284c7', fontSize: '0.9rem', py: 0.9, px: 1.5 }}>
-                      {formatMoney(totals.totalAmount)}
-                    </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 800, color: '#16a34a', fontSize: '0.9rem', py: 0.9, px: 1.5 }}>
-                      {formatMoney(totals.totalPaid)}
-                    </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 800, color: totals.totalDebt > 0 ? '#dc2626' : '#0369a1', fontSize: '0.9rem', py: 0.9, px: 1.5 }}>
-                      {formatMoney(totals.totalDebt)}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                          <TableCell align="left" sx={{ fontWeight: 700, color: '#0f172a', fontSize: '0.875rem', py: 0.8, px: 1.5 }}>
+                            {item.name}
+                          </TableCell>
+
+                          <TableCell align="right" sx={{ fontWeight: 700, color: '#1e293b', py: 0.8, px: 1.5, fontSize: '0.875rem' }}>
+                            {formatMoney(amount)}
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 700, color: '#16a34a', py: 0.8, px: 1.5, fontSize: '0.875rem' }}>
+                            {formatMoney(paid)}
+                          </TableCell>
+                          <TableCell
+                            align="right"
+                            sx={{
+                              fontWeight: 700,
+                              color: debtVal > 0 ? '#dc2626' : '#475569',
+                              py: 0.8,
+                              px: 1.5,
+                              fontSize: '0.875rem',
+                            }}
+                          >
+                            {formatMoney(debtVal)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                        <FileSpreadsheet size={40} color="#cbd5e1" style={{ marginBottom: 8 }} />
+                        <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#64748b' }}>
+                          Không có dữ liệu báo cáo phù hợp
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+
+                  {/* DÒNG TỔNG CỘNG HỆ THỐNG */}
+                  {displayData.length > 0 && (
+                    <TableRow sx={{ bgcolor: '#f0f9ff', borderTop: '2px solid #0284c7' }}>
+                      <TableCell colSpan={2} align="center" sx={{ fontWeight: 800, color: '#0369a1', fontSize: '0.875rem', letterSpacing: '0.5px', py: 0.9, px: 1.5 }}>
+                        TỔNG CỘNG HỆ THỐNG
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 800, color: '#0284c7', fontSize: '0.9rem', py: 0.9, px: 1.5 }}>
+                        {formatMoney(totals.totalAmount)}
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 800, color: '#16a34a', fontSize: '0.9rem', py: 0.9, px: 1.5 }}>
+                        {formatMoney(totals.totalPaid)}
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 800, color: totals.totalDebt > 0 ? '#dc2626' : '#0369a1', fontSize: '0.9rem', py: 0.9, px: 1.5 }}>
+                        {formatMoney(totals.totalDebt)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </Box>
-      </Box>
+      </Paper>
     </Box>
   );
 }

@@ -271,8 +271,33 @@ export default function HoaDonBanHang() {
   });
 
   return (
-    <Box sx={{ width: { xs: '100%', sm: '80%' }, mx: 'auto', p: { xs: 0.5, sm: 2 }, bgcolor: '#f1f5f9', minHeight: '100vh', boxSizing: 'border-box' }}>
-      <Paper elevation={2} className="print-invoice-area" sx={{ width: '100%', p: { xs: 2, sm: 3 }, borderRadius: 2, bgcolor: '#fff' }}>
+    <Box
+      sx={{
+        width: '100%',
+        maxWidth: '100%',
+        mx: 'auto',
+        p: { xs: 1, sm: 2 },
+        bgcolor: '#eff6ff',
+        minHeight: '100vh',
+        boxSizing: 'border-box',
+        fontFamily: "'Inter', sans-serif",
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          width: '100%',
+          maxWidth: '1200px',
+          mx: 'auto',
+          p: { xs: 2, sm: 3 },
+          borderRadius: 2,
+          bgcolor: '#fff',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 8px 30px rgba(15, 23, 42, 0.045)',
+          boxSizing: 'border-box',
+        }}
+        className="print-invoice-area"
+      >
         
         {/* ĐẦU PHIẾU: CHIA 3 CỘT */}
         <Box
@@ -778,7 +803,7 @@ export default function HoaDonBanHang() {
           </Table>
         </TableContainer>
 
-        {/* NÚT TÁC VỤ DƯỚI CÙNG */}        
+        {/* NÚT TÁC VỤ DƯỚI CÙNG */}       
         <Box
           sx={{
             display: 'flex',

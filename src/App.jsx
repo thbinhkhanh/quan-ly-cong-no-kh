@@ -21,6 +21,7 @@ import DanhSachKhachHang from './pages/DanhSachKhachHang';
 import DanhMucHangHoa from './pages/DanhMucHangHoa';
 import DoanhSoBanHang from './pages/DoanhSoBanHang';
 import ThanhToanCongNo from './pages/ThanhToanCongNo';
+import CaiDatHeThong from './pages/CaiDatHeThong';
 
 // Import Dialog Đổi mật khẩu
 import ChangePasswordDialog from './dialogs/ChangePasswordDialog';
@@ -380,6 +381,12 @@ function AppContent() {
           </div>
         )}
 
+        {activeModule === 'cai-dat' && (
+          <div className="min-h-screen bg-[#f4f6f9] w-full p-2 md:p-4">
+            <CaiDatHeThong onBack={() => setActiveModule('dashboard')} />
+          </div>
+        )}
+
         {![
           'login',
           'dashboard',
@@ -392,6 +399,7 @@ function AppContent() {
           'bao-cao-thong-ke',
           'thanh-toan-cong-no',
           'phan-phoi-quy',
+          'cai-dat',
         ].includes(activeModule) && (
           <div className="min-h-screen bg-[#f4f6f9] p-4 w-full">
             <div className="w-full bg-white rounded-xl shadow-sm border border-slate-200 p-6">

@@ -460,6 +460,13 @@ return (
           </Card>
         </Grid>
       </Grid>
+
+      {/* THÔNG TIN BẢN QUYỀN VÀ PHIÊN BẢN */}
+      <Box sx={{ mt: 3, pt: 2, borderTop: '1px dashed #cbd5e1', textAlign: 'center' }}>
+        <Typography variant="caption" sx={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>
+          Bản quyền thuộc về: thbinhkhanh@gmail.com | Phiên bản: v1.0.0
+        </Typography>
+      </Box>
     </Paper>
 
     {/* DIALOG XÁC NHẬN PHỤC HỒI DỮ LIỆU */}
